@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        nvim-version: ["v0.9.0", "v0.10.0", "nightly"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Neovim
+        uses: rhymond/setup-neovim@v1
+        with:
+          neovim-version: ${{ matrix.nvim-version }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install matplotlib numpy plotext textplots
+
+      - name: Install Lua dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y luarocks
+          sudo luarocks install luacheck
+          sudo luarocks install busted
+
+      - name: Run linting
+        run: luacheck lua/ plugin/ --globals vim
+
+      - name: Run tests
+        run: busted tests/
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          draft: false
+          prerelease: false

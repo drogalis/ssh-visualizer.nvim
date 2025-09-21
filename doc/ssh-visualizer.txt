@@ -1,0 +1,141 @@
+SSH-friendly visualization for Neovim
+
+Author: Your Name <your.email@example.com>
+License: MIT
+Version: 1.0.0
+
+CONTENTS                                                        *ssh-viz-contents*
+
+    1. Introduction ........................... |ssh-viz-introduction|
+    2. Installation ........................... |ssh-viz-installation|
+    3. Configuration .......................... |ssh-viz-configuration|
+    4. Usage .................................. |ssh-viz-usage|
+    5. Commands ............................... |ssh-viz-commands|
+    6. Functions .............................. |ssh-viz-functions|
+    7. Troubleshooting ........................ |ssh-viz-troubleshooting|
+
+==============================================================================
+INTRODUCTION                                               *ssh-viz-introduction*
+
+ssh-viz.nvim is a Neovim plugin that enables visualization of matplotlib plots
+and data analysis results in SSH/remote environments where traditional image
+display is challenging.
+
+Features:
+  • ASCII plots for immediate terminal feedback
+  • Web-based visualization via built-in HTTP server
+  • Matplotlib integration with automatic plot generation
+  • Shared directory support for team environments
+  • SSH-friendly design for remote development
+  • Quantitative finance optimized templates
+
+==============================================================================
+INSTALLATION                                               *ssh-viz-installation*
+
+Using lazy.nvim: >
+    {
+      "your-username/ssh-viz.nvim",
+      dependencies = { "Vigemus/iron.nvim" },
+      ft = { "python", "quarto", "markdown" },
+      config = function()
+        require("ssh-viz").setup()
+      end,
+    }
+<
+
+Server-side requirements: >
+    pip install matplotlib textplots plotext numpy pandas
+<
+
+==============================================================================
+CONFIGURATION                                             *ssh-viz-configuration*
+
+Default configuration: >
+    require("ssh-viz").setup({
+      output_dir = "/tmp/nvim_plots",
+      shared_dir = nil,
+      web_server = {
+        host = "0.0.0.0",
+        port = 8888,
+        auto_open = false,
+        cors_enabled = true,
+      },
+      ascii = {
+        width = 80,
+        height = 24,
+        use_unicode = true,
+        style = "braille",
+      },
+    })
+<
+
+==============================================================================
+USAGE                                                             *ssh-viz-usage*
+
+Basic workflow:
+1. Setup iron.nvim REPL: `<leader>io`
+2. Create data in Python
+3. Plot with keymaps:
+   • `<leader>vv` - Quick plot variable under cursor
+   • `<leader>vl` - Line plot with prompt
+   • `<leader>va` - ASCII plot in terminal
+
+==============================================================================
+COMMANDS                                                       *ssh-viz-commands*
+
+:SshVizStart                                                     *:SshVizStart*
+    Start the plot HTTP server
+
+:SshVizStop                                                       *:SshVizStop*
+    Stop the plot HTTP server
+
+:SshVizPlot                                                       *:SshVizPlot*
+    Open interactive plotting menu
+
+:SshVizOpen                                                       *:SshVizOpen*
+    Open plot output directory
+
+:SshVizInfo                                                       *:SshVizInfo*
+    Show plugin status and configuration
+
+==============================================================================
+FUNCTIONS                                                     *ssh-viz-functions*
+
+require("ssh-viz").plot_line({data_var})                         *ssh-viz.plot_line()*
+    Generate line plot for specified variable
+
+require("ssh-viz").plot_scatter({data_var})                   *ssh-viz.plot_scatter()*
+    Generate scatter plot for specified variable
+
+require("ssh-viz").plot_histogram({data_var})               *ssh-viz.plot_histogram()*
+    Generate histogram for specified variable
+
+require("ssh-viz").start_server()                            *ssh-viz.start_server()*
+    Start HTTP server for plot viewing
+
+==============================================================================
+TROUBLESHOOTING                                         *ssh-viz-troubleshooting*
+
+Common issues:
+
+Plot server not accessible:
+  • Check firewall: `sudo ufw allow 8888`
+  • Verify server: `netstat -tulpn | grep :8888`
+  • Try different port in configuration
+
+ASCII plots not displaying:
+  • Install packages: `pip install textplots plotext`
+  • Check terminal Unicode support
+  • Set `ascii = { use_unicode = false }`
+
+Permission errors:
+  • Check directory permissions: `chmod 755 /tmp/nvim_plots`
+  • Verify shared directory access
+
+Iron.nvim integration:
+  • Verify iron.nvim configuration
+  • Ensure Python REPL is active
+  • Check `:IronInfo` for status
+
+==============================================================================
+vim:tw=78:ts=8:noet:ft=help:norl:
